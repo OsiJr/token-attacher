@@ -85,6 +85,14 @@
 			Hooks.on("createToken", (parent, entity, options, userId) => TokenAttacher.updateAttachedCreatedToken(parent, entity, options, userId));
 			Hooks.on("pasteToken", (copy, toCreate) => TokenAttacher.pasteTokens(copy, toCreate));
 			Hooks.on("deleteToken", (entity, options, userId) => TokenAttacher.deleteToken(entity, options, userId));
+
+			Hooks.on("preUpdateMeasuredTemplate", (parent, doc, update, options, userId) => TokenAttacher.CheckIfAttached(parent, doc, update, options, userId));			
+			Hooks.on("preUpdateTile", (parent, doc, update, options, userId) => TokenAttacher.CheckIfAttached(parent, doc, update, options, userId));			
+			Hooks.on("preUpdateDrawing", (parent, doc, update, options, userId) => TokenAttacher.CheckIfAttached(parent, doc, update, options, userId));			
+			Hooks.on("preUpdateAmbientLight", (parent, doc, update, options, userId) => TokenAttacher.CheckIfAttached(parent, doc, update, options, userId));			
+			Hooks.on("preUpdateAmbientSound", (parent, doc, update, options, userId) => TokenAttacher.CheckIfAttached(parent, doc, update, options, userId));			
+			Hooks.on("preUpdateNote", (parent, doc, update, options, userId) => TokenAttacher.CheckIfAttached(parent, doc, update, options, userId));			
+			Hooks.on("preUpdateWall", (parent, doc, update, options, userId) => TokenAttacher.CheckIfAttached(parent, doc, update, options, userId));
 		
 			Hooks.on("getCompendiumDirectoryEntryContext", async (html, options) => {
 				options.push( 
@@ -1219,6 +1227,13 @@
 			actors.forEach(async actor => {
 				await worldCompendium.createEntity({type: game.system.entityTypes.Actor[0], img:actor.img, name:actor.name, token: actor.token});
 			});
+		}
+		
+		static CheckIfAttached(parent, doc, update, options, userId){
+			let offset = doc.getFlag(moduleName, "offset") || {};
+			if(Object.key(offset).length === 0) return true;
+			if(getProperty(options, moduleName)) return true;
+			return false;
 		}
 	}
 
